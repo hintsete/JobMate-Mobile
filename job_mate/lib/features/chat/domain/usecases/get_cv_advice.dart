@@ -11,6 +11,4 @@ class GetCvAdvice {
   Future<Either<Failure,Message>> call(String profileText, int userId) async{
     return await repository.sendMessage('Analyze CV: $profileText', userId);
   }
-
-
 }
