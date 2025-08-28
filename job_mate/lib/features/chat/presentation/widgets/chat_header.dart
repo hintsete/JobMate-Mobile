@@ -13,7 +13,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: const Color.fromARGB(255, 191, 244, 234),
+      backgroundColor: const Color.fromARGB(255, 201, 237, 230),
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -22,33 +22,46 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         children: [
           const CircleAvatar(
-            backgroundColor: Colors.teal,
+            backgroundColor: Color(0xFF005148),
             child: Text("JM", style: TextStyle(color: Colors.white)),
           ),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              Text("JobMate",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black)),
-              Text("Your AI Career Buddy",
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+              Text(
+                "JobMate",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                "Your AI Career Buddy",
+                style: TextStyle(fontSize: 12, color: Color(0xFF1E1E1E)),
+              ),
             ],
           ),
         ],
       ),
       actions: [
-        IconButton(
-          onPressed: onToggleLanguage,
-          icon: Row(
-            children: const [
-              Icon(Icons.language, color: Colors.black),
-              SizedBox(width: 4),
-              Text("አማ", style: TextStyle(color: Colors.black)),
-            ],
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: TextButton.icon(
+            onPressed: onToggleLanguage,
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.language, color: Colors.black, size: 20),
+            label: const Text(
+              "አማ",
+              style: TextStyle(color: Colors.black, fontSize: 13),
+            ),
           ),
-        )
+        ),
       ],
     );
   }

@@ -9,32 +9,50 @@ class QuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final actions = ["CV", "Jobs", "Interview", "Skills"];
 
+    IconData _getIcon(String action) {
+      switch (action) {
+        case "CV":
+          return Icons.article;
+        case "Jobs":
+          return Icons.work;
+        case "Interview":
+          return Icons.mic;
+        case "Skills":
+          return Icons.school;
+        default:
+          return Icons.circle;
+      }
+    }
+
     return Container(
-      color: const Color.fromARGB(255, 191, 244, 234), 
+      color: const Color(0xFFEAF6F4),
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: actions.map((action) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: ElevatedButton.icon(
-                onPressed: () => onActionSelected(action),
-                icon: const Icon(Icons.insert_drive_file, size: 16),
-                label: Text(action),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          children:
+              actions.map((action) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ElevatedButton.icon(
+                    onPressed: () => onActionSelected(action),
+                    icon: Icon(_getIcon(action), size: 16, color: Colors.black),
+                    label: Text(action),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 0,
+                    ),
                   ),
-                  elevation: 0,
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ),
     );
