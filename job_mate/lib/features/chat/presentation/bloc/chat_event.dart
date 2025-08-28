@@ -14,10 +14,10 @@ abstract class ChatEvent extends Equatable {
     List<Object> get props => [text, userId];
   }
 
-  class RequestCvAdvice extends ChatEvent {
-    final String profileText;
-    final int userId;
-    const RequestCvAdvice(this.profileText, this.userId);
-    @override
-    List<Object> get props => [profileText, userId];
-  }
+  // class RequestCvAdvice extends ChatEvent {
+  //   final String profileText;
+  //   final int userId;
+  //   const RequestCvAdvice(this.profileText, this.userId);
+  //   @override
+  //   List<Object> get props => [profileText, userId];
+  // }

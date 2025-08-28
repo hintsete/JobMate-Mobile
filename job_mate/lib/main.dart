@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:job_mate/features/chat/data/datasources/dummy_chat_data_source.dart';
 import 'package:job_mate/features/chat/data/repositories/chat_repository_impl.dart';
-import 'package:job_mate/features/chat/domain/usecases/get_cv_advice.dart';
+
+
+
 import 'package:job_mate/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:job_mate/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:job_mate/features/chat/presentation/pages/chat_screen.dart';
@@ -18,15 +20,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository = ChatRepositoryImpl(DummyChatDataSource());
+    final chatRepository = ChatRepositoryImpl(DummyChatDataSource());
+    // after implementing the data layer turn of the comment below
+    // final CvRepository=CvRepositoryImpl(DummyChatDataSource());
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'JobMate Chat',
       theme: ThemeData(primarySwatch: Colors.lightGreen),
       home: BlocProvider(
         create: (context) => ChatBloc(
-          sendChatMessage: SendMessageUsecase(repository),
-          getCvAdvice: GetCvAdvice(repository),
+          sendChatMessage: SendMessageUsecase(chatRepository),
+          // getCvAdvice: GetCvAdvice(repository),
         ),
         child: ChatScreen(),
       ),
