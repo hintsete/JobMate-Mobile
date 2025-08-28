@@ -36,9 +36,9 @@ class ChatScreen extends StatelessWidget {
                     await _profileLocal.saveProfile(
                       Profile(cvId: 1, userId: 1, originalText: text),
                     );
-                    BlocProvider.of<ChatBloc>(
-                      context,
-                    ).add(RequestCvAdvice('Analyze CV: $text', 1));
+                    // BlocProvider.of<ChatBloc>(
+                    //   context,
+                    // ).add(RequestCvAdvice('Analyze CV: $text', 1));
                     Navigator.of(ctx).pop();
                   }
                 },
