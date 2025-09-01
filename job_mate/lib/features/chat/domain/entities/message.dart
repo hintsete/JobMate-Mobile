@@ -19,8 +19,5 @@ class Message extends Equatable{
       
       List<Object?> get props => [conversationId,userId,message,isFromUser,createdAt];
 
- 
-    
-    
 
 }

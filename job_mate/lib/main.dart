@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:job_mate/features/chat/data/datasources/dummy_chat_data_source.dart';
+import 'package:job_mate/features/chat/data/datasources/dummy/dummy_chat_data_source.dart';
 import 'package:job_mate/features/chat/data/repositories/chat_repository_impl.dart';
 
 

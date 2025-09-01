@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:job_mate/core/error/failure.dart';
-import 'package:job_mate/features/chat/data/datasources/dummy_chat_data_source.dart';
+import 'package:job_mate/features/chat/data/datasources/dummy/dummy_chat_data_source.dart';
 import 'package:job_mate/features/chat/domain/entities/message.dart';
 import 'package:job_mate/features/chat/domain/repositories/chat_repository.dart';
 
