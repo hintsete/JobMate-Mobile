@@ -17,6 +17,10 @@ import 'package:job_mate/features/cv/domain/usecases/analyze_cv.dart';
 import 'package:job_mate/features/cv/domain/usecases/upload_cv.dart';
 import 'package:job_mate/features/cv/presentation/bloc/cv_bloc.dart';
 
+import 'package:job_mate/features/interview/domain/usecases/send_freeform_message.dart';
+import 'package:job_mate/features/interview/domain/usecases/start_freeform_session.dart';
+import 'package:job_mate/features/interview/presentation/blocs/interview_bloc.dart';
+
 final sl = GetIt.instance;
 
 // network connection
@@ -62,5 +66,16 @@ Future<void> init() async {
   // CV Bloc
   sl.registerFactory(
     () => CvBloc(uploadCv: sl<UploadCv>(), analyzeCv: sl<AnalyzeCv>()),
+  );
+
+  // INTERVIEW Feature Dependencies
+  sl.registerLazySingleton(() => StartFreeformSession(sl()));
+  sl.registerLazySingleton(() => SendFreeformMessage(sl()));
+
+  sl.registerFactory(
+    () => InterviewBloc(
+      startFreeformSession: sl<StartFreeformSession>(),
+      sendFreeformMessage: sl<SendFreeformMessage>(),
+    ),
   );
 }

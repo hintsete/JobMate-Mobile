@@ -4,6 +4,7 @@ import 'package:job_mate/core/presentation/router.dart';
 import 'package:job_mate/dependency_injection.dart' as di;
 import 'package:job_mate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:job_mate/features/cv/presentation/bloc/cv_bloc.dart';
+import 'package:job_mate/features/interview/presentation/blocs/interview_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => di.sl<AuthBloc>()),
         BlocProvider(create: (_) => di.sl<CvBloc>()),
+        BlocProvider(create: (_) => di.sl<InterviewBloc>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
