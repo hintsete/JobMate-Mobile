@@ -352,5 +352,13 @@
   "getPersonalizedLearningPlan": "Get personalized learning plan",
   "@getPersonalizedLearningPlan": {
     "description": "Skill boost feature description"
+  },
+  "reanalyzeCv": "Reanalyze CV",
+  "@reanalyzeCv": {
+    "description": "Reanalyze CV button text"
+  },
+  "analyzeMyCv": "Analyze My CV",
+  "@analyzeMyCv": {
+    "description": "Analyze My CV button text"
   }
 }
