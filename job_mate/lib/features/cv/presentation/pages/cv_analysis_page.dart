@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:job_mate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:job_mate/features/cv/data/datasources/local/profile_local_data_source_impl.dart';
 import 'package:job_mate/features/cv/domain/entities/cv_feedback.dart';
 import 'package:job_mate/features/cv/domain/entities/chat_session.dart';
@@ -12,6 +14,7 @@ import 'package:job_mate/features/cv/presentation/bloc/cv/cv_event.dart';
 import 'package:job_mate/features/cv/presentation/bloc/cv/cv_state.dart';
 import 'package:job_mate/features/cv/presentation/bloc/cv_chat/cv_chat_bloc.dart';
 import 'package:job_mate/features/cv/presentation/bloc/cv_chat/cv_chat_event.dart';
+import 'package:job_mate/core/presentation/bloc/localization_bloc.dart';
 
 import 'package:job_mate/features/cv/presentation/widgets/chat_header.dart';
 import 'package:job_mate/features/cv/presentation/widgets/cv_input_widget.dart';
@@ -48,7 +51,9 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserId();
-      context.read<CvChatBloc>().add(GetAllCvChatSessionsEvent()); // Load all chat sessions
+      context.read<CvChatBloc>().add(
+        GetAllCvChatSessionsEvent(),
+      ); // Load all chat sessions
     });
     _textController.addListener(() {
       setState(() {});
@@ -67,9 +72,10 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       userId = profile?.userId;
     }
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not authenticated. Please log in.')),
-      );
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.userNotAuthenticated)));
     }
     setState(() => isLoadingUserId = false);
   }
@@ -86,10 +92,11 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
 
   void _onBottomItemTapped(int index) {
     if (index != 0) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This section is coming soon'),
-          duration: Duration(seconds: 1),
+        SnackBar(
+          content: Text(l10n.comingSoon),
+          duration: const Duration(seconds: 1),
         ),
       );
     }
@@ -102,11 +109,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   void _sendMessage() {
     final message = _messageController.text.trim();
     if (message.isNotEmpty && currentChatId != null) {
-      context.read<CvChatBloc>().add(SendCvChatMessageEvent(
-            chatId: currentChatId!,
-            message: message,
-            cvId: null,
-          ));
+      context.read<CvChatBloc>().add(
+        SendCvChatMessageEvent(
+          chatId: currentChatId!,
+          message: message,
+          cvId: null,
+        ),
+      );
       _messageController.clear();
     }
   }
@@ -128,6 +137,8 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   // -----------------------
 
   Widget _buildUploadBox() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -144,12 +155,16 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
-                    Icon(Icons.description, color: Color(0xFF005148)),
-                    SizedBox(width: 8),
-                    Text("CV Analysis",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
+                  children: [
+                    const Icon(Icons.description, color: Color(0xFF005148)),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.cvAnalysis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -172,9 +187,9 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 isTextMode
                     ? CvInputWidget(controller: _textController)
                     : FileUploadWidget(
-                        filePath: uploadedFilePath,
-                        onPickFile: _pickFile,
-                      ),
+                      filePath: uploadedFilePath,
+                      onPickFile: _pickFile,
+                    ),
 
                 const SizedBox(height: 16),
 
@@ -196,11 +211,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
           const CircleAvatar(
             radius: 20,
             backgroundColor: Color(0xFF144A3F),
-            child: Text('JM',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
+            child: Text(
+              'JM',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -251,18 +268,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
         CircleAvatar(
           radius: 20,
           backgroundColor: Color(0xFF144A3F),
-          child: Text('JM',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              )),
-        ),
-        SizedBox(width: 8),
-        Expanded(
-          child: SizedBox(
-            child: Text("✍️ Analyzing your CV..."),
+          child: Text(
+            'JM',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
+        SizedBox(width: 8),
+        Expanded(child: SizedBox(child: Text("✍️ Analyzing your CV..."))),
       ],
     );
   }
@@ -274,13 +286,15 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF005148),
-              )),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF005148),
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(content),
+          Text(content!),
         ],
       ),
     );
@@ -292,11 +306,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF005148),
-              )),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF005148),
+            ),
+          ),
           const SizedBox(height: 4),
           ...items.map((e) => Text("• $e")),
         ],
@@ -305,12 +321,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   }
 
   Widget _skillGapsSection(List<SkillGap> skillGaps) {
-    final validGaps = skillGaps.where((gap) {
-      return (gap.skillName != null && gap.skillName!.isNotEmpty) ||
-          (gap.importance != null && gap.importance!.isNotEmpty) ||
-          (gap.improvementSuggestions != null &&
-              gap.improvementSuggestions!.isNotEmpty);
-    }).toList();
+    final validGaps =
+        skillGaps.where((gap) {
+          return (gap.skillName != null && gap.skillName!.isNotEmpty) ||
+              (gap.importance != null && gap.importance!.isNotEmpty) ||
+              (gap.improvementSuggestions != null &&
+                  gap.improvementSuggestions!.isNotEmpty);
+        }).toList();
 
     if (validGaps.isEmpty) return const SizedBox.shrink();
 
@@ -339,7 +356,8 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 levelInfo += 'Recommended: ${gap.recommendedLevel}';
               }
               lines.add(
-                  "• ${gap.skillName}${levelInfo.isNotEmpty ? ' ($levelInfo)' : ''}");
+                "• ${gap.skillName}${levelInfo.isNotEmpty ? ' ($levelInfo)' : ''}",
+              );
             }
             if (gap.importance != null && gap.importance!.isNotEmpty) {
               lines.add("   Importance: ${gap.importance}");
@@ -362,6 +380,8 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   }
 
   Widget _analyzeButton() {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -369,31 +389,34 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
           backgroundColor: const Color(0xFF238471),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        onPressed: (userId == null ||
-                isLoadingUserId ||
-                (isTextMode && _textController.text.trim().isEmpty) ||
-                (!isTextMode && uploadedFilePath == null))
-            ? null
-            : () {
-                if (isTextMode) {
-                  context.read<CvBloc>().add(
-                        UploadCvEvent(
-                          userId: userId!,
-                          rawText: _textController.text.trim(),
-                        ),
-                      );
-                } else if (uploadedFilePath != null) {
-                  context.read<CvBloc>().add(
-                        UploadCvEvent(
-                          userId: userId!,
-                          filePath: uploadedFilePath!,
-                        ),
-                      );
-                }
-              },
-        child: const Text("Analyze My CV", style: TextStyle(fontSize: 16)),
+        onPressed:
+            (userId == null ||
+                    isLoadingUserId ||
+                    (isTextMode && _textController.text.trim().isEmpty) ||
+                    (!isTextMode && uploadedFilePath == null))
+                ? null
+                : () {
+                  if (isTextMode) {
+                    context.read<CvBloc>().add(
+                      UploadCvEvent(
+                        userId: userId!,
+                        rawText: _textController.text.trim(),
+                      ),
+                    );
+                  } else if (uploadedFilePath != null) {
+                    context.read<CvBloc>().add(
+                      UploadCvEvent(
+                        userId: userId!,
+                        filePath: uploadedFilePath!,
+                      ),
+                    );
+                  }
+                },
+        child: Text(l10n.analyzeMyCv, style: const TextStyle(fontSize: 16)),
       ),
     );
   }
@@ -419,28 +442,30 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   }
 
   Widget _bottomNavBar() {
+    final l10n = AppLocalizations.of(context)!;
+
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: 0,
       onTap: _onBottomItemTapped,
       selectedItemColor: const Color(0xFF0A8C6D),
       unselectedItemColor: Colors.black,
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.description_outlined),
-          label: 'CV',
+          icon: const Icon(Icons.description_outlined),
+          label: l10n.cvTab,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.work_outline),
-          label: 'Jobs',
+          icon: const Icon(Icons.work_outline),
+          label: l10n.jobsTab,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline),
-          label: 'Interview',
+          icon: const Icon(Icons.chat_bubble_outline),
+          label: l10n.interviewTab,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.star_border),
-          label: 'Skills',
+          icon: const Icon(Icons.star_border),
+          label: l10n.skillsTab,
         ),
       ],
     );
@@ -448,159 +473,178 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: ChatHeader(
-        onBack: () => Navigator.pop(context),
-        onToggleLanguage: () {},
-        onShowHistory: () => _openChatHistory(context),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF144A3F)),
-              child: Text('Your CV Chats',
-                  style: TextStyle(color: Colors.white)),
-            ),
-            ...chatSessions.map((chat) => ListTile(
-      title: Text("Chat ${chat.chatId}"), // ✅ fixed
-      subtitle: Text("Updated: ${chat.updatedAt.toLocal()}"),
-      onTap: () {
-        Navigator.pop(context);
-        _selectChat(chat);
-      },
-)),
+    final l10n = AppLocalizations.of(context)!;
 
-          ],
-        ),
-      ),
-      body: BlocConsumer<CvBloc, CvState>(
-        listener: (context, state) {
-          if (state is CvError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.message)));
-          }
-          if (state is CvUploaded) {
-            context.read<CvBloc>().add(AnalyzeCvEvent(state.details.cvId));
-            setState(() => showUploadBox = false);
-          }
-          if (state is CvAnalyzed) {
-            setState(() => _feedbackHistory.insert(0, state.feedback));
-          }
-        },
-        builder: (context, state) {
-          return Column(
-  children: [
-    // Main scrollable area (messages + feedback)
-    Expanded(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Greeting
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<LocalizationBloc, LocalizationState>(
+      builder: (context, localizationState) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ChatHeader(
+            onBack: () => Navigator.pop(context),
+            onShowHistory: () => _openChatHistory(context),
+          ),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
               children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Color(0xFF144A3F),
-                  child: Text('JM',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      )),
+                const DrawerHeader(
+                  decoration: BoxDecoration(color: Color(0xFF144A3F)),
+                  child: Text(
+                    'Your CV Chats',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEAF6F4),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      'I would be happy to help you with your CV.\n'
-                      'You can upload your current CV or describe your background below.',
-                      style: TextStyle(fontSize: 14),
-                    ),
+                ...chatSessions.map(
+                  (chat) => ListTile(
+                    title: Text("Chat ${chat.chatId}"), //
+                    subtitle: Text("Updated: ${chat.updatedAt.toLocal()}"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _selectChat(chat);
+                    },
                   ),
                 ),
               ],
             ),
+          ),
+          body: BlocConsumer<CvBloc, CvState>(
+            listener: (context, state) {
+              if (state is CvError) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+              if (state is CvUploaded) {
+                context.read<CvBloc>().add(AnalyzeCvEvent(state.details.cvId));
+                setState(() => showUploadBox = false);
+              }
+              if (state is CvAnalyzed) {
+                setState(() => _feedbackHistory.insert(0, state.feedback));
+              }
+            },
+            builder: (context, state) {
+              return Column(
+                children: [
+                  // Main scrollable area (messages + feedback)
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 24,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Greeting
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Color(0xFF144A3F),
+                                child: Text(
+                                  'JM',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEAF6F4),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    l10n.cvHelpMessage,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
 
-            const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-            if (showUploadBox) _buildUploadBox(),
+                          if (showUploadBox) _buildUploadBox(),
 
-            if (!showUploadBox) ...[
-              if (state is CvLoading) _typingBubble(),
-              ..._feedbackHistory.map((f) => _feedbackBubble(f)),
+                          if (!showUploadBox) ...[
+                            if (state is CvLoading) _typingBubble(),
+                            ..._feedbackHistory.map((f) => _feedbackBubble(f)),
 
-              if (suggestions != null)
-                SuggestionCard(
-                  suggestion: suggestions!,
-                  onTap: (s) => _messageController.text = s,
-                ),
-            ],
-          ],
-        ),
-      ),
-    ),
+                            if (suggestions != null)
+                              SuggestionCard(
+                                suggestion: suggestions!,
+                                onTap: (s) => _messageController.text = s,
+                              ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
 
-    // Fixed bottom actions (message input + reanalyze button)
-    if (!showUploadBox)
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            MessageInput(
-              controller: _messageController,
-              onSend: _sendMessage,
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-  onPressed: _toggleUploadBox,
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.teal, // Teal background
-    foregroundColor: Colors.white, // Text color
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // Control width and height
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8), // Slightly rounded corners
-    ),
-  ),
-  child: const Text(
-    "Reanalyze CV",
-    textAlign: TextAlign.center,
-    style: TextStyle(
-      fontSize: 16, // Adjust text size if needed
-      fontWeight: FontWeight.bold,
-    ),
-  ),
-),
-
-          ],
-        ),
-      ),
-  ],
-);
-
-        },
-      ),
-      bottomNavigationBar: _bottomNavBar(),
+                  // Fixed bottom actions (message input + reanalyze button)
+                  if (!showUploadBox)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, -2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MessageInput(
+                            controller: _messageController,
+                            onSend: _sendMessage,
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: _toggleUploadBox,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal, // Teal background
+                              foregroundColor: Colors.white, // Text color
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ), // Control width and height
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  8,
+                                ), // Slightly rounded corners
+                              ),
+                            ),
+                            child: Text(
+                              l10n.reanalyzeCv,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16, // Adjust text size if needed
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          bottomNavigationBar: _bottomNavBar(),
+        );
+      },
     );
   }
 }

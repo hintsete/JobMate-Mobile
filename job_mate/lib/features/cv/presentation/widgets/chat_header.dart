@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:job_mate/core/presentation/widgets/language_toggle_button.dart';
 
 class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onBack;
-  final VoidCallback onToggleLanguage;
-  final VoidCallback onShowHistory; // ✅ Added
+  final VoidCallback onShowHistory;
 
   const ChatHeader({
     super.key,
     required this.onBack,
-    required this.onToggleLanguage,
-    required this.onShowHistory, // ✅ Required
+    required this.onShowHistory,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppBar(
       backgroundColor: const Color(0xFFEAF6F4),
       elevation: 0,
@@ -30,17 +32,17 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
-                "JobMate",
-                style: TextStyle(
+                l10n.appTitle,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
               Text(
-                "Your AI Career Buddy",
-                style: TextStyle(fontSize: 12, color: Color(0xFF1E1E1E)),
+                l10n.yourAiCareerBuddy,
+                style: const TextStyle(fontSize: 12, color: Color(0xFF1E1E1E)),
               ),
             ],
           ),
@@ -49,23 +51,14 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.history, color: Colors.black),
-          onPressed: onShowHistory, // ✅ History button
+          onPressed: onShowHistory,
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: TextButton.icon(
-            onPressed: onToggleLanguage,
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            icon: const Icon(Icons.language, color: Colors.black, size: 20),
-            label: const Text(
-              "አማ",
-              style: TextStyle(color: Colors.black, fontSize: 13),
-            ),
+        const Padding(
+          padding: EdgeInsets.only(right: 12),
+          child: LanguageToggleButton(
+            backgroundColor: Colors.white,
+            iconColor: Colors.black,
+            textColor: Colors.black,
           ),
         ),
       ],
