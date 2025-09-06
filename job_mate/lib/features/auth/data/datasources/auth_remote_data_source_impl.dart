@@ -39,11 +39,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         );
       }
     } on DioException catch (e) {
+      print(' DioException during login:');
+      print('   Type: ${e.type}');
+      print('   Message: ${e.message}');
+      print('   Status Code: ${e.response?.statusCode}');
+      print('   Response Data: ${e.response?.data}');
+      print('   Request URL: ${e.requestOptions.uri}');
+      
       if (e.response?.statusCode == 401) {
         throw DioException(
           requestOptions: e.requestOptions,
           response: e.response,
           message: 'Invalid email or password',
+        );
+      } else if (e.response?.statusCode == 404) {
+        throw DioException(
+          requestOptions: e.requestOptions,
+          response: e.response,
+          message: 'Server endpoint not found. Please check if the server is running.',
         );
       }
       rethrow;

@@ -1,4 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- For accessing network state -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- For accessing WiFi state -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- For camera (if you add photo upload) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- For file access (if you add file upload) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        
     <application
         android:label="job_mate"
         android:name="${applicationName}"
