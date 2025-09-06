@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:job_mate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:job_mate/core/presentation/widgets/language_toggle_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,7 +37,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _onGoogleLoginPressed() async {
-    const googleLoginUrl = 'https://jobmate-api-3wuo.onrender.com/oauth/google/login';
+    const googleLoginUrl =
+        'https://jobmate-api-3wuo.onrender.com/oauth/google/login';
     print('Attempting to launch Google OAuth URL: $googleLoginUrl');
     try {
       final canLaunch = await canLaunchUrl(Uri.parse(googleLoginUrl));
@@ -67,14 +69,28 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: LanguageToggleButton(
+              backgroundColor: Colors.grey.shade200,
+              iconColor: Colors.teal,
+              textColor: Colors.teal,
+            ),
+          ),
+        ],
+      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
             context.go('/home');
           } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         builder: (context, state) {
@@ -102,14 +118,20 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 4),
                       Text(
                         l10n.yourAiCareerBuddy,
-                        style: const TextStyle(fontSize: 12, color: Colors.black54),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 32),
                   Text(
                     l10n.welcomeBack,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -186,14 +208,17 @@ class _LoginPageState extends State<LoginPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.teal,
                                 ),
-                                child: isLoading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : Text(
-                                        l10n.signIn,
-                                        style: const TextStyle(color: Colors.white),
-                                      ),
+                                child:
+                                    isLoading
+                                        ? const CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
+                                        : Text(
+                                          l10n.signIn,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -201,8 +226,12 @@ class _LoginPageState extends State<LoginPage> {
                               width: double.infinity,
                               height: 48,
                               child: OutlinedButton.icon(
-                                onPressed: isLoading ? null : _onGoogleLoginPressed,
-                                icon: Image.asset('assets/google_logo.png', height: 24), // Add Google logo asset
+                                onPressed:
+                                    isLoading ? null : _onGoogleLoginPressed,
+                                icon: Image.asset(
+                                  'assets/google_logo.png',
+                                  height: 24,
+                                ), // Add Google logo asset
                                 label: const Text("Sign in with Google"),
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.grey),
