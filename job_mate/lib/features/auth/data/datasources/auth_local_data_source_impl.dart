@@ -17,10 +17,17 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> cacheAuthToken(AuthTokenModel authToken) async {
+    print(
+      'AuthLocalDataSource: Caching token: ${authToken.accessToken.substring(0, 20)}...',
+    );
+    print('AuthLocalDataSource: Token expiry: ${authToken.expiresIn}');
+
     // Store the access token and expiry time
     await sharedPreferences.setString(_authTokenKey, authToken.accessToken);
     await sharedPreferences.setInt(_tokenExpiryKey, authToken.expiresIn);
     await sharedPreferences.setBool(_isLoggedInKey, true);
+
+    print('AuthLocalDataSource: Token cached successfully');
   }
 
   @override
@@ -28,12 +35,16 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     final token = sharedPreferences.getString(_authTokenKey);
     final expiry = sharedPreferences.getInt(_tokenExpiryKey);
 
+    print(
+      'AuthLocalDataSource: Retrieved from storage - token: ${token != null ? "EXISTS" : "NULL"}, expiry: $expiry',
+    );
+
     if (token != null && expiry != null) {
-      return AuthTokenModel(
-        accessToken: token,
-        expiresIn: expiry,
-      );
+      final authToken = AuthTokenModel(accessToken: token, expiresIn: expiry);
+      print('AuthLocalDataSource: Returning cached token');
+      return authToken;
     }
+    print('AuthLocalDataSource: No cached token found');
     return null;
   }
 
@@ -76,7 +87,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<bool> isUserLoggedIn() async {
     final isLoggedIn = sharedPreferences.getBool(_isLoggedInKey) ?? false;
     final token = sharedPreferences.getString(_authTokenKey);
-    
+
     // Check if user is marked as logged in and has a valid token
     return isLoggedIn && token != null;
   }
