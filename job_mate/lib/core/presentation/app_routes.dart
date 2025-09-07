@@ -8,6 +8,8 @@ import 'package:job_mate/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:job_mate/features/cv/presentation/pages/cv_analysis_page.dart';
 import 'package:job_mate/features/interview/presentation/pages/interview_chat_page.dart';
 import 'package:job_mate/features/job_search/presentation/pages/job_search_page.dart';
+import 'package:job_mate/features/interview/presentation/pages/interview_selection_page.dart';
+import 'package:job_mate/features/interview/presentation/pages/structured_interview_page.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: Routes.splashScreen,
@@ -28,7 +30,22 @@ final GoRouter router = GoRouter(
     GoRoute(path: Routes.home, builder: (context, state) => const HomePage()),
     GoRoute(
       path: Routes.interviewPrep,
-      builder: (context, state) => const InterviewPage(),
+      builder: (context, state) => const InterviewSelectionPage(),
+    ),
+    GoRoute(
+      path: '/interview',
+      builder: (context, state) => const InterviewSelectionPage(),
+    ),
+    GoRoute(
+      path: '/interview/freeform',
+      builder: (context, state) => const FreeformInterviewPage(),
+    ),
+    GoRoute(
+      path: '/interview/structured',
+      builder: (context, state) {
+        final field = state.uri.queryParameters['field'] ?? 'Software Engineer';
+        return StructuredInterviewPage(field: field);
+      },
     ),
     GoRoute(
       path: Routes.jobSearch,
