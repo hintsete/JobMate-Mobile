@@ -23,6 +23,8 @@ import 'package:job_mate/features/cv/presentation/widgets/message_input.dart';
 import 'package:job_mate/features/cv/presentation/widgets/suggestion_card.dart';
 import 'package:job_mate/features/auth/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:job_mate/core/presentation/widgets/language_toggle_button.dart';
 
 class CvAnalysisPage extends StatefulWidget {
   const CvAnalysisPage({super.key});
@@ -38,7 +40,8 @@ class TypingIndicator extends StatefulWidget {
   State<TypingIndicator> createState() => _TypingIndicatorState();
 }
 
-class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProviderStateMixin {
+class _TypingIndicatorState extends State<TypingIndicator>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -50,10 +53,7 @@ class _TypingIndicatorState extends State<TypingIndicator> with SingleTickerProv
       vsync: this,
     )..repeat(reverse: true);
 
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
   @override
@@ -173,7 +173,9 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
     }
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not authenticated. Please log in.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.userNotAuthenticated),
+        ),
       );
     }
     setState(() => isLoadingUserId = false);
@@ -192,8 +194,8 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   void _onBottomItemTapped(int index) {
     if (index != 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This section is coming soon'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.comingSoon),
           duration: Duration(seconds: 1),
         ),
       );
@@ -220,21 +222,25 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
         isSendingMessage = true;
         isWaitingForChatResponse = true;
         // Add user message immediately
-        chatMessages.add(ChatMessage(
-          id: 'user-${DateTime.now().millisecondsSinceEpoch}',
-          role: 'user',
-          content: message,
-          timeStamp: DateTime.now(),
-        ));
+        chatMessages.add(
+          ChatMessage(
+            id: 'user-${DateTime.now().millisecondsSinceEpoch}',
+            role: 'user',
+            content: message,
+            timeStamp: DateTime.now(),
+          ),
+        );
       });
       _messageController.clear();
       _scrollToBottom();
-      
-      context.read<CvChatBloc>().add(SendCvChatMessageEvent(
-        chatId: currentChatId!,
-        message: message,
-        cvId: currentCvId,
-      ));
+
+      context.read<CvChatBloc>().add(
+        SendCvChatMessageEvent(
+          chatId: currentChatId!,
+          message: message,
+          cvId: currentCvId,
+        ),
+      );
     }
   }
 
@@ -250,7 +256,7 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       isWaitingForChatResponse = false;
       isWaitingForSuggestions = false;
     });
-    
+
     // Always fetch the latest history from the server
     context.read<CvChatBloc>().add(GetCvChatHistoryEvent(chat.chatId));
   }
@@ -273,6 +279,7 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   // -----------------------
 
   Widget _buildUploadBox() {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -289,12 +296,16 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
-                    Icon(Icons.description, color: Color(0xFF005148)),
-                    SizedBox(width: 8),
-                    Text("CV Analysis",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
+                  children: [
+                    const Icon(Icons.description, color: Color(0xFF005148)),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.cvAnalysis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -302,11 +313,11 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 // Mode toggle
                 Row(
                   children: [
-                    _modeButton("Type/Paste", isTextMode, () {
+                    _modeButton(l10n.typePaste, isTextMode, () {
                       setState(() => isTextMode = true);
                     }),
                     const SizedBox(width: 10),
-                    _modeButton("Upload File", !isTextMode, () {
+                    _modeButton(l10n.uploadCv, !isTextMode, () {
                       setState(() => isTextMode = false);
                     }),
                   ],
@@ -317,9 +328,9 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 isTextMode
                     ? CvInputWidget(controller: _textController)
                     : FileUploadWidget(
-                        filePath: uploadedFilePath,
-                        onPickFile: _pickFile,
-                      ),
+                      filePath: uploadedFilePath,
+                      onPickFile: _pickFile,
+                    ),
 
                 const SizedBox(height: 16),
 
@@ -331,39 +342,46 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       ],
     );
   }
+
   String _formatTimeAgo(DateTime date) {
-  final now = DateTime.now();
-  final difference = now.difference(date);
-  
-  if (difference.inMinutes < 1) return 'Just now';
-  if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
-  if (difference.inHours < 24) return '${difference.inHours}h ago';
-  if (difference.inDays < 7) return '${difference.inDays}d ago';
-  if (difference.inDays < 30) return '${(difference.inDays / 7).floor()}w ago';
-  
-  return _formatDate(date);
-}
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return '${difference.inHours}h ago';
+    if (difference.inDays < 7) return '${difference.inDays}d ago';
+    if (difference.inDays < 30)
+      return '${(difference.inDays / 7).floor()}w ago';
+
+    return _formatDate(date);
+  }
 
   Widget _buildMessageBubble(ChatMessage message) {
     final isUser = message.role == 'user';
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser)
             const CircleAvatar(
               radius: 16,
               backgroundColor: Color(0xFF144A3F),
-              child: Text('JM', style: TextStyle(color: Colors.white, fontSize: 10)),
+              child: Text(
+                'JM',
+                style: TextStyle(color: Colors.white, fontSize: 10),
+              ),
             ),
           if (!isUser) const SizedBox(width: 8),
           Flexible(
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isUser ? const Color(0xFF238471) : const Color(0xFFEAF6F4),
+                color:
+                    isUser ? const Color(0xFF238471) : const Color(0xFFEAF6F4),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -408,6 +426,7 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   }
 
   Widget _feedbackBubble(CvFeedback feedback) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
@@ -416,11 +435,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
           const CircleAvatar(
             radius: 20,
             backgroundColor: Color(0xFF144A3F),
-            child: Text('JM',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
+            child: Text(
+              'JM',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -442,17 +463,27 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _section("Summary", feedback.summary),
-                  _section("✅ Strengths", feedback.strengths),
-                  _section("⚠️ Weaknesses", feedback.weaknesses),
-                  _section("💡 Improvements", feedback.improvementSuggestions),
+                  _section(l10n.summary, feedback.summary),
+                  _section(l10n.strengths, feedback.strengths),
+                  _section(l10n.weaknesses, feedback.weaknesses),
+                  _section(l10n.improvements, feedback.improvementSuggestions),
                   if (feedback.extractedSkills.isNotEmpty)
-                    _listSection("Extracted Skills", feedback.extractedSkills),
+                    _listSection(
+                      l10n.extractedSkills,
+                      feedback.extractedSkills,
+                    ),
                   if (feedback.extractedExperience.isNotEmpty)
-                    _listSection("Experience", feedback.extractedExperience),
+                    _listSection(
+                      l10n.extractedExperience,
+                      feedback.extractedExperience,
+                    ),
                   if (feedback.extractedEducation.isNotEmpty)
-                    _listSection("Education", feedback.extractedEducation),
-                  if (feedback.skillGaps != null && feedback.skillGaps!.isNotEmpty)
+                    _listSection(
+                      l10n.extractedEducation,
+                      feedback.extractedEducation,
+                    ),
+                  if (feedback.skillGaps != null &&
+                      feedback.skillGaps!.isNotEmpty)
                     _skillGapsSection(feedback.skillGaps!),
                 ],
               ),
@@ -472,7 +503,10 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
           CircleAvatar(
             radius: 16,
             backgroundColor: Color(0xFF144A3F),
-            child: Text('JM', style: TextStyle(color: Colors.white, fontSize: 10)),
+            child: Text(
+              'JM',
+              style: TextStyle(color: Colors.white, fontSize: 10),
+            ),
           ),
           SizedBox(width: 8),
           TypingIndicator(),
@@ -488,13 +522,15 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF005148),
-              )),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF005148),
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(content),
+          Text(content!),
         ],
       ),
     );
@@ -506,11 +542,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF005148),
-              )),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF005148),
+            ),
+          ),
           const SizedBox(height: 4),
           ...items.map((e) => Text("• $e")),
         ],
@@ -519,11 +557,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   }
 
   Widget _skillGapsSection(List<SkillGap> skillGaps) {
-    final validGaps = skillGaps.where((gap) {
-      return (gap.skillName != null && gap.skillName!.isNotEmpty) ||
-          (gap.importance != null && gap.importance!.isNotEmpty) ||
-          (gap.improvementSuggestions != null && gap.improvementSuggestions!.isNotEmpty);
-    }).toList();
+    final validGaps =
+        skillGaps.where((gap) {
+          return (gap.skillName != null && gap.skillName!.isNotEmpty) ||
+              (gap.importance != null && gap.importance!.isNotEmpty) ||
+              (gap.improvementSuggestions != null &&
+                  gap.improvementSuggestions!.isNotEmpty);
+        }).toList();
 
     if (validGaps.isEmpty) return const SizedBox.shrink();
 
@@ -551,12 +591,15 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 if (levelInfo.isNotEmpty) levelInfo += ', ';
                 levelInfo += 'Recommended: ${gap.recommendedLevel}';
               }
-              lines.add("• ${gap.skillName}${levelInfo.isNotEmpty ? ' ($levelInfo)' : ''}");
+              lines.add(
+                "• ${gap.skillName}${levelInfo.isNotEmpty ? ' ($levelInfo)' : ''}",
+              );
             }
             if (gap.importance != null && gap.importance!.isNotEmpty) {
               lines.add("   Importance: ${gap.importance}");
             }
-            if (gap.improvementSuggestions != null && gap.improvementSuggestions!.isNotEmpty) {
+            if (gap.improvementSuggestions != null &&
+                gap.improvementSuggestions!.isNotEmpty) {
               lines.add("   Suggestions: ${gap.improvementSuggestions}");
             }
             return Padding(
@@ -573,6 +616,7 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
   }
 
   Widget _analyzeButton() {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -580,32 +624,36 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
           backgroundColor: const Color(0xFF238471),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        onPressed: (userId == null ||
-                isLoadingUserId ||
-                (isTextMode && _textController.text.trim().isEmpty) ||
-                (!isTextMode && uploadedFilePath == null))
-            ? null
-            : () {
-                if (isTextMode) {
-                  context.read<CvBloc>().add(
-                        UploadCvEvent(
-                          userId: userId!,
-                          rawText: _textController.text.trim(),
-                        ),
-                      );
-                } else if (uploadedFilePath != null) {
-                  context.read<CvBloc>().add(
-                        UploadCvEvent(
-                          userId: userId!,
-                          filePath: uploadedFilePath!,
-                        ),
-                      );
-                }
-              },
-        child: const Text("Analyze My CV", style: TextStyle(fontSize: 16)),
-      ));
+        onPressed:
+            (userId == null ||
+                    isLoadingUserId ||
+                    (isTextMode && _textController.text.trim().isEmpty) ||
+                    (!isTextMode && uploadedFilePath == null))
+                ? null
+                : () {
+                  if (isTextMode) {
+                    context.read<CvBloc>().add(
+                      UploadCvEvent(
+                        userId: userId!,
+                        rawText: _textController.text.trim(),
+                      ),
+                    );
+                  } else if (uploadedFilePath != null) {
+                    context.read<CvBloc>().add(
+                      UploadCvEvent(
+                        userId: userId!,
+                        filePath: uploadedFilePath!,
+                      ),
+                    );
+                  }
+                },
+        child: Text(l10n.analyzeMyCv, style: const TextStyle(fontSize: 16)),
+      ),
+    );
   }
 
   Widget _modeButton(String label, bool active, VoidCallback onTap) {
@@ -640,21 +688,16 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
           icon: Icon(Icons.description_outlined),
           label: 'CV',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.work_outline),
-          label: 'Jobs',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.work_outline), label: 'Jobs'),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat_bubble_outline),
           label: 'Interview',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.star_border),
-          label: 'Skills',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.star_border), label: 'Skills'),
       ],
     );
   }
+
   void _navigateToHome() {
     // Navigate back to home using GoRouter
     context.go(Routes.home);
@@ -680,7 +723,7 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
             chatMessages.add(state.message);
           });
           _scrollToBottom();
-          
+
           // Get suggestions after chat response
           context.read<CvBloc>().add(GetSuggestionsEvent());
         } else if (state is CvChatSessionCreated) {
@@ -696,9 +739,9 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
             isWaitingForChatResponse = false;
             isWaitingForSuggestions = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         } else if (state is CvChatLoading) {
           setState(() {
             isWaitingForChatResponse = true;
@@ -710,301 +753,342 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
         backgroundColor: Colors.white,
         appBar: ChatHeader(
           // onBack: () => Navigator.pop(context),
-          
           onBack: _navigateToHome,
-          onToggleLanguage: () {},
           onShowHistory: _openChatHistory, // CHANGED: Removed context parameter
         ),
         drawer: Drawer(
-  width: MediaQuery.of(context).size.width * 0.85,
-  elevation: 16,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.horizontal(right: Radius.circular(24)),
-  ),
-  child: Container(
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.horizontal(right: Radius.circular(24)),
-    ),
-    child: Column(
-      children: [
-        // Header with gradient
-        Container(
-          height: 140,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF144A3F),
-                Color(0xFF238471),
-              ],
-            ),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(24),
-              bottomRight: Radius.circular(24),
-            ),
+          width: MediaQuery.of(context).size.width * 0.85,
+          elevation: 16,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.horizontal(right: Radius.circular(24)),
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -20,
-                top: -20,
-                child: Opacity(
-                  opacity: 0.1,
-                  child: Icon(
-                    Icons.chat_bubble_outline,
-                    size: 120,
-                    color: Colors.white,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.horizontal(right: Radius.circular(24)),
+            ),
+            child: Column(
+              children: [
+                // Header with gradient
+                Container(
+                  height: 140,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF144A3F), Color(0xFF238471)],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    ),
                   ),
-                ),
-              ),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.chat_rounded,
-                      size: 32,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'CV Chat History',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${chatSessions.length} conversation${chatSessions.length != 1 ? 's' : ''}',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        
-
-        // Chat list
-        Expanded(
-          child: chatSessions.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Stack(
                     children: [
-                      Icon(
-                        Icons.forum_outlined,
-                        size: 64,
-                        color: Colors.grey.shade300,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'No conversations yet',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
+                      Positioned(
+                        right: -20,
+                        top: -20,
+                        child: Opacity(
+                          opacity: 0.1,
+                          child: Icon(
+                            Icons.chat_bubble_outline,
+                            size: 120,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Start analyzing your CV to begin',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 12,
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.chat_rounded,
+                              size: 32,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'CV Chat History',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${chatSessions.length} conversation${chatSessions.length != 1 ? 's' : ''}',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                  itemCount: chatSessions.length,
-                  itemBuilder: (context, index) {
-                    final chat = chatSessions[index];
-                    final messageCount = chat.messages.length;
-                    final lastMessage = messageCount > 0 
-                        ? chat.messages.last.content 
-                        : 'Start a conversation';
-                    final lastMessageTime = messageCount > 0 
-                        ? chat.messages.last.timeStamp 
-                        : chat.updatedAt;
-                    
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                            _selectChat(chat);
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: currentChatId == chat.chatId 
-                                  ? const Color(0xFFEAF6F4)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: currentChatId == chat.chatId
-                                  ? Border.all(color: const Color(0xFF238471), width: 1.5)
-                                  : Border.all(color: Colors.grey.shade200, width: 1),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+
+                // Chat list
+                Expanded(
+                  child:
+                      chatSessions.isEmpty
+                          ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Avatar with message count
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF144A3F),
-                                    shape: BoxShape.circle,
+                                Icon(
+                                  Icons.forum_outlined,
+                                  size: 64,
+                                  color: Colors.grey.shade300,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'No conversations yet',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      '${index + 1}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Start analyzing your CV to begin',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          : ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 8,
+                            ),
+                            itemCount: chatSessions.length,
+                            itemBuilder: (context, index) {
+                              final chat = chatSessions[index];
+                              final messageCount = chat.messages.length;
+                              final lastMessage =
+                                  messageCount > 0
+                                      ? chat.messages.last.content
+                                      : AppLocalizations.of(
+                                        context,
+                                      )!.startConversation;
+                              final lastMessageTime =
+                                  messageCount > 0
+                                      ? chat.messages.last.timeStamp
+                                      : chat.updatedAt;
+
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _selectChat(chat);
+                                    },
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            currentChatId == chat.chatId
+                                                ? const Color(0xFFEAF6F4)
+                                                : Colors.white,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border:
+                                            currentChatId == chat.chatId
+                                                ? Border.all(
+                                                  color: const Color(
+                                                    0xFF238471,
+                                                  ),
+                                                  width: 1.5,
+                                                )
+                                                : Border.all(
+                                                  color: Colors.grey.shade200,
+                                                  width: 1,
+                                                ),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Avatar with message count
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFF144A3F),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '${index + 1}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+
+                                          // Chat details
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                // Header with date and message count
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      'Chat ${index + 1}',
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14,
+                                                        color: Color(
+                                                          0xFF144A3F,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .chat_bubble_outline,
+                                                          size: 12,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade500,
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        Text(
+                                                          '$messageCount',
+                                                          style: TextStyle(
+                                                            fontSize: 11,
+                                                            color:
+                                                                Colors
+                                                                    .grey
+                                                                    .shade600,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+
+                                                // Last message preview
+                                                Text(
+                                                  lastMessage,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey.shade700,
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+
+                                                // Timestamp
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.access_time,
+                                                      size: 10,
+                                                      color:
+                                                          Colors.grey.shade500,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      _formatTimeAgo(
+                                                        lastMessageTime,
+                                                      ),
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                        color:
+                                                            Colors
+                                                                .grey
+                                                                .shade500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // Chevron icon
+                                          const Icon(
+                                            Icons.chevron_right,
+                                            size: 20,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                
-                                // Chat details
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Header with date and message count
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Chat ${index + 1}',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                              color: Color(0xFF144A3F),
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.chat_bubble_outline,
-                                                size: 12,
-                                                color: Colors.grey.shade500,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                '$messageCount',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Colors.grey.shade600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      
-                                      // Last message preview
-                                      Text(
-                                        lastMessage,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey.shade700,
-                                          height: 1.3,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      
-                                      // Timestamp
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.access_time,
-                                            size: 10,
-                                            color: Colors.grey.shade500,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            _formatTimeAgo(lastMessageTime),
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey.shade500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                
-                                // Chevron icon
-                                const Icon(
-                                  Icons.chevron_right,
-                                  size: 20,
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
+                ),
+
+                // Footer
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: Colors.grey.shade200),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total: ${chatSessions.length} chats',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
                         ),
                       ),
-                    );
-                  },
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                        tooltip: 'Close',
+                      ),
+                    ],
+                  ),
                 ),
-        ),
-        
-        // Footer
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: Colors.grey.shade200)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Total: ${chatSessions.length} chats',
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 12,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close, size: 20),
-                onPressed: () => Navigator.pop(context),
-                tooltip: 'Close',
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ],
-    ),
-  ),
-),
 
         body: BlocConsumer<CvBloc, CvState>(
           listener: (context, state) {
             if (state is CvError) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.message)));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
               setState(() {
                 isAnalyzing = false;
               });
@@ -1023,11 +1107,11 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 showAnalysisComplete = true;
                 currentFeedback = state.feedback;
               });
-              
+
               if (currentCvId != null) {
                 context.read<CvChatBloc>().add(
-                      CreateCvChatSessionEvent(currentCvId!),
-                    );
+                  CreateCvChatSessionEvent(currentCvId!),
+                );
               }
             }
             if (state is CvSuggestionsLoaded) {
@@ -1044,7 +1128,10 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1055,11 +1142,13 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                               const CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Color(0xFF144A3F),
-                                child: Text('JM',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    )),
+                                child: Text(
+                                  'JM',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -1069,10 +1158,9 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                                     color: const Color(0xFFEAF6F4),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: const Text(
-                                    'I would be happy to help you with your CV.\n'
-                                    'You can upload your current CV or describe your background below.',
-                                    style: TextStyle(fontSize: 14),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.cvHelpMessage,
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                 ),
                               ),
@@ -1085,14 +1173,15 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
 
                         if (isAnalyzing) _typingBubble(),
 
-                        if (currentFeedback != null) _feedbackBubble(currentFeedback!),
+                        if (currentFeedback != null)
+                          _feedbackBubble(currentFeedback!),
 
                         if (showAnalysisComplete) ...[
                           // Display all chat messages
                           ...chatMessages.map((m) => _buildMessageBubble(m)),
-                          
+
                           // Show typing indicator when waiting for AI response
-                          if (isWaitingForChatResponse) 
+                          if (isWaitingForChatResponse)
                             const Padding(
                               padding: EdgeInsets.only(bottom: 16.0),
                               child: Row(
@@ -1101,16 +1190,22 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                                   CircleAvatar(
                                     radius: 16,
                                     backgroundColor: Color(0xFF144A3F),
-                                    child: Text('JM', style: TextStyle(color: Colors.white, fontSize: 10)),
+                                    child: Text(
+                                      'JM',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 8),
                                   TypingIndicator(),
                                 ],
                               ),
                             ),
-                          
+
                           // Show typing indicator when waiting for suggestions
-                          if (isWaitingForSuggestions) 
+                          if (isWaitingForSuggestions)
                             const Padding(
                               padding: EdgeInsets.only(bottom: 16.0),
                               child: Row(
@@ -1119,14 +1214,20 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                                   CircleAvatar(
                                     radius: 16,
                                     backgroundColor: Color(0xFF144A3F),
-                                    child: Text('JM', style: TextStyle(color: Colors.white, fontSize: 10)),
+                                    child: Text(
+                                      'JM',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 8),
                                   TypingIndicator(),
                                 ],
                               ),
                             ),
-                          
+
                           // Show suggestions after they load
                           if (suggestions != null)
                             SuggestionCard(
@@ -1141,7 +1242,10 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
 
                 if (showAnalysisComplete)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
@@ -1166,7 +1270,10 @@ class _CvAnalysisPageState extends State<CvAnalysisPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),

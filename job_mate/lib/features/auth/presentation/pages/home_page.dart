@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:job_mate/core/presentation/routes.dart';
+import 'package:job_mate/core/presentation/widgets/language_toggle_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,7 +11,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   bool _isRefreshing = false;
@@ -44,6 +46,27 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9F8), // Light teal background
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF238471),
+        elevation: 0,
+        title: Text(
+          l10n.appTitle,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: LanguageToggleButton(
+              backgroundColor: Colors.white.withOpacity(0.2),
+              iconColor: Colors.white,
+              textColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         color: const Color(0xFF238471),
@@ -55,7 +78,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               Container(
                 width: double.infinity,
                 color: const Color(0xFF238471),
-                padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 50,
+                  horizontal: 24,
+                ),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Column(

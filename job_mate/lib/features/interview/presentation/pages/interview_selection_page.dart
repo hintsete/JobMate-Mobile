@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:job_mate/core/presentation/routes.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:job_mate/core/presentation/widgets/language_toggle_button.dart';
 
 class InterviewSelectionPage extends StatelessWidget {
   const InterviewSelectionPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9F8),
       appBar: AppBar(
         backgroundColor: const Color(0xFF238471),
-        title: const Text(
-          'Interview Practice',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.interviewPrep,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.go(Routes.home),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: LanguageToggleButton(
+              backgroundColor: Colors.white.withOpacity(0.2),
+              iconColor: Colors.white,
+              textColor: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -26,33 +42,32 @@ class InterviewSelectionPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            const Text(
-              'Choose Your Interview Practice Mode',
-              style: TextStyle(
+            Text(
+              l10n.chooseInterviewMode,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF144A3F),
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Select the type of interview practice that best fits your needs.',
-              style: TextStyle(fontSize: 16, color: Color(0xFF666666)),
+            Text(
+              l10n.selectInterviewType,
+              style: const TextStyle(fontSize: 16, color: Color(0xFF666666)),
             ),
             const SizedBox(height: 40),
 
             // Freeform Interview Card
             _buildInterviewModeCard(
               context,
-              title: 'Freeform Interview',
-              subtitle: 'Chat-based practice',
-              description:
-                  'Have a natural conversation with our AI interviewer. Ask questions, practice answers, and get real-time feedback in a relaxed environment.',
+              title: l10n.freeformInterview,
+              subtitle: l10n.chatBasedPractice,
+              description: l10n.freeformDescription,
               features: [
-                'Open conversation format',
-                'Ask any interview questions',
-                'Real-time AI responses',
-                'Practice at your own pace',
+                l10n.openConversationFormat,
+                l10n.askAnyQuestions,
+                l10n.realtimeAiResponses,
+                l10n.practiceAtOwnPace,
               ],
               icon: Icons.chat_bubble_outline,
               color: const Color(0xFF28957F),
@@ -64,15 +79,14 @@ class InterviewSelectionPage extends StatelessWidget {
             // Structured Interview Card
             _buildInterviewModeCard(
               context,
-              title: 'Structured Interview',
-              subtitle: 'Guided Q&A session',
-              description:
-                  'Experience a realistic interview with 6 carefully selected questions. Get detailed feedback after each answer to improve your performance.',
+              title: l10n.structuredInterview,
+              subtitle: l10n.guidedQaSession,
+              description: l10n.structuredDescription,
               features: [
-                '6 structured questions',
-                'Detailed feedback per answer',
-                'Progress tracking',
-                'Realistic interview simulation',
+                l10n.sixStructuredQuestions,
+                l10n.detailedFeedbackPerAnswer,
+                l10n.progressTracking,
+                l10n.realisticInterviewSimulation,
               ],
               icon: Icons.quiz_outlined,
               color: const Color(0xFF1976D2),
@@ -193,6 +207,7 @@ class InterviewSelectionPage extends StatelessWidget {
   }
 
   void _showFieldSelectionDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final TextEditingController customFieldController = TextEditingController();
 
     showDialog(
@@ -201,43 +216,41 @@ class InterviewSelectionPage extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select Interview Field'),
+              title: Text(l10n.selectInterviewField),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Choose the field for your structured interview:',
-                    ),
+                    Text(l10n.chooseFieldForStructuredInterview),
                     const SizedBox(height: 16),
                     _buildFieldOption(
                       context,
-                      'Software Engineer',
+                      l10n.softwareEngineer,
                       'software_engineering',
                     ),
                     _buildFieldOption(
                       context,
-                      'Data Scientist',
+                      l10n.dataScientist,
                       'data_scientist',
                     ),
                     _buildFieldOption(
                       context,
-                      'Product Manager',
+                      l10n.productManager,
                       'product_manager',
                     ),
-                    _buildFieldOption(context, 'Marketing', 'marketing'),
-                    _buildFieldOption(context, 'Sales', 'sales'),
+                    _buildFieldOption(context, l10n.marketing, 'marketing'),
+                    _buildFieldOption(context, l10n.sales, 'sales'),
 
                     const SizedBox(height: 16),
                     const Divider(),
                     const SizedBox(height: 16),
 
                     // Custom field input section
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Or enter a custom field:',
-                        style: TextStyle(
+                        l10n.orEnterCustomField,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF144A3F),
@@ -248,7 +261,7 @@ class InterviewSelectionPage extends StatelessWidget {
                     TextField(
                       controller: customFieldController,
                       decoration: InputDecoration(
-                        hintText: 'e.g., UX Designer, DevOps Engineer...',
+                        hintText: l10n.exampleUxDesignerDevopsEngineer,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -284,7 +297,7 @@ class InterviewSelectionPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Start Custom Field Interview'),
+                        child: Text(l10n.startCustomFieldInterview),
                       ),
                     ),
                   ],
@@ -293,7 +306,7 @@ class InterviewSelectionPage extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                 ),
               ],
             );
@@ -304,6 +317,7 @@ class InterviewSelectionPage extends StatelessWidget {
   }
 
   Widget _buildFieldOption(BuildContext context, String label, String field) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 8),

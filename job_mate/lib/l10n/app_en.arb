@@ -352,5 +352,221 @@
   "getPersonalizedLearningPlan": "Get personalized learning plan",
   "@getPersonalizedLearningPlan": {
     "description": "Skill boost feature description"
+  },
+  "reanalyzeCv": "Reanalyze CV",
+  "@reanalyzeCv": {
+    "description": "Reanalyze CV button text"
+  },
+  "analyzeMyCv": "Analyze My CV",
+  "@analyzeMyCv": {
+    "description": "Analyze My CV button text"
+  },
+  "typePaste": "Type/Paste",
+  "@typePaste": {
+    "description": "Type/Paste mode button text"
+  },
+  "uploadFile": "Upload File",
+  "@uploadFile": {
+    "description": "Upload file mode button text"
+  },
+  "summary": "Summary",
+  "@summary": {
+    "description": "CV feedback summary section title"
+  },
+  "strengths": "✅ Strengths",
+  "@strengths": {
+    "description": "CV feedback strengths section title"
+  },
+  "weaknesses": "⚠️ Weaknesses",
+  "@weaknesses": {
+    "description": "CV feedback weaknesses section title"
+  },
+  "improvements": "💡 Improvements",
+  "@improvements": {
+    "description": "CV feedback improvements section title"
+  },
+  "extractedSkills": "Extracted Skills",
+  "@extractedSkills": {
+    "description": "CV extracted skills section title"
+  },
+  "extractedExperience": "Experience",
+  "@extractedExperience": {
+    "description": "CV extracted experience section title"
+  },
+  "extractedEducation": "Education",
+  "@extractedEducation": {
+    "description": "CV extracted education section title"
+  },
+  "cvChatHistory": "CV Chat History",
+  "@cvChatHistory": {
+    "description": "CV chat history drawer title"
+  },
+  "noConversationsYet": "No conversations yet",
+  "@noConversationsYet": {
+    "description": "Empty state message for no conversations"
+  },
+  "startAnalyzingCv": "Start analyzing your CV to begin",
+  "@startAnalyzingCv": {
+    "description": "Empty state instruction message"
+  },
+  "chat": "Chat {number}",
+  "@chat": {
+    "description": "Chat item title with number",
+    "placeholders": {
+      "number": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "totalConversations": "Total: {count} chats",
+  "@totalConversations": {
+    "description": "Total conversations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  "chooseInterviewMode": "Choose Your Interview Practice Mode",
+  "@chooseInterviewMode": {
+    "description": "Title for interview mode selection"
+  },
+  "selectInterviewType": "Select the interview practice type that suits your needs.",
+  "@selectInterviewType": {
+    "description": "Subtitle for interview mode selection"
+  },
+  "freeformInterview": "Freeform Interview",
+  "@freeformInterview": {
+    "description": "Title for freeform interview mode"
+  },
+  "chatBasedPractice": "Chat-based practice",
+  "@chatBasedPractice": {
+    "description": "Subtitle for freeform interview mode"
+  },
+  "freeformDescription": "Have natural conversations with our AI interviewer. Ask questions, practice responses, and get real-time feedback in a relaxed environment.",
+  "@freeformDescription": {
+    "description": "Description for freeform interview mode"
+  },
+  "openConversationFormat": "Open conversation format",
+  "@openConversationFormat": {
+    "description": "Feature of freeform interview"
+  },
+  "askAnyQuestions": "Ask any interview questions",
+  "@askAnyQuestions": {
+    "description": "Feature of freeform interview"
+  },
+  "realtimeAiResponses": "Real-time AI responses",
+  "@realtimeAiResponses": {
+    "description": "Feature of freeform interview"
+  },
+  "practiceAtOwnPace": "Practice at your own pace",
+  "@practiceAtOwnPace": {
+    "description": "Feature of freeform interview"
+  },
+  "structuredInterview": "Structured Interview",
+  "@structuredInterview": {
+    "description": "Title for structured interview mode"
+  },
+  "guidedQaSession": "Guided Q&A session",
+  "@guidedQaSession": {
+    "description": "Subtitle for structured interview mode"
+  },
+  "structuredDescription": "Practice a real interview with 6 carefully selected questions. Get detailed feedback after each response.",
+  "@structuredDescription": {
+    "description": "Description for structured interview mode"
+  },
+  "sixStructuredQuestions": "6 structured questions",
+  "@sixStructuredQuestions": {
+    "description": "Feature of structured interview"
+  },
+  "detailedFeedbackPerAnswer": "Detailed feedback per answer",
+  "@detailedFeedbackPerAnswer": {
+    "description": "Feature of structured interview"
+  },
+  "progressTracking": "Progress tracking",
+  "@progressTracking": {
+    "description": "Feature of structured interview"
+  },
+  "realisticInterviewSimulation": "Realistic interview simulation",
+  "@realisticInterviewSimulation": {
+    "description": "Feature of structured interview"
+  },
+  "selectInterviewField": "Select Interview Field",
+  "@selectInterviewField": {
+    "description": "Title for field selection dialog"
+  },
+  "chooseFieldForStructuredInterview": "Choose a field for your structured interview:",
+  "@chooseFieldForStructuredInterview": {
+    "description": "Instruction for field selection"
+  },
+  "softwareEngineer": "Software Engineer",
+  "@softwareEngineer": {
+    "description": "Software Engineer field option"
+  },
+  "dataScientist": "Data Scientist",
+  "@dataScientist": {
+    "description": "Data Scientist field option"
+  },
+  "productManager": "Product Manager",
+  "@productManager": {
+    "description": "Product Manager field option"
+  },
+  "marketing": "Marketing",
+  "@marketing": {
+    "description": "Marketing field option"
+  },
+  "sales": "Sales",
+  "@sales": {
+    "description": "Sales field option"
+  },
+  "orEnterCustomField": "Or enter a custom field:",
+  "@orEnterCustomField": {
+    "description": "Custom field input label"
+  },
+  "exampleUxDesignerDevopsEngineer": "e.g., UX Designer, DevOps Engineer...",
+  "@exampleUxDesignerDevopsEngineer": {
+    "description": "Custom field input placeholder"
+  },
+  "startCustomFieldInterview": "Start Custom Field Interview",
+  "@startCustomFieldInterview": {
+    "description": "Custom field interview start button"
+  },
+  "skillGaps": "Skill Gaps",
+  "@skillGaps": {
+    "description": "Skill gaps section title"
+  },
+  "current": "Current",
+  "@current": {
+    "description": "Current skill level label"
+  },
+  "recommended": "Recommended",
+  "@recommended": {
+    "description": "Recommended skill level label"
+  },
+  "importance": "Importance",
+  "@importance": {
+    "description": "Skill importance label"
+  },
+  "suggestions": "Suggestions",
+  "@suggestions": {
+    "description": "Improvement suggestions label"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Time indicator for very recent activity"
+  },
+  "ago": "ago",
+  "@ago": {
+    "description": "Time suffix for past activities"
+  },
+  "startConversation": "Start a conversation",
+  "@startConversation": {
+    "description": "Placeholder text for empty chat"
   }
 }

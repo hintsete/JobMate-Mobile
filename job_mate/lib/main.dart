@@ -20,7 +20,7 @@ import 'package:job_mate/features/job_search/presentation/bloc/job_search_bloc.d
 // import 'package:job_mate/features/cv/presentation/bloc/cv_bloc.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // >>>>>>> e551cae63743c136fa1d52fe1108c543baa8a138
-
+import 'package:job_mate/core/presentation/bloc/localization_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
@@ -40,30 +40,41 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<CvChatBloc>()),
         BlocProvider(create: (_) => di.sl<JobChatBloc>()),
         BlocProvider(create: (_) => di.sl<InterviewBloc>()),
-      ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'JobMate',
-        routerConfig: router,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'), // English
-          Locale('am'), // Amharic
-        ],
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF144A3F), // Dark teal
-            primary: const Color(0xFF238471),   // Medium teal
-            secondary: const Color(0xFF0A8C6D), // Light teal
-          ),
-          scaffoldBackgroundColor: const Color(0xFFF5F9F8), // Light teal background
-          useMaterial3: true,
+        BlocProvider(
+          create:
+              (_) => di.sl<LocalizationBloc>()..add(LoadSavedLanguageEvent()),
         ),
+      ],
+      child: BlocBuilder<LocalizationBloc, LocalizationState>(
+        builder: (context, localizationState) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'JobMate',
+            routerConfig: router,
+            locale: localizationState.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'), // English
+              Locale('am'), // Amharic
+            ],
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF144A3F), // Dark teal
+                primary: const Color(0xFF238471), // Medium teal
+                secondary: const Color(0xFF0A8C6D), // Light teal
+              ),
+              scaffoldBackgroundColor: const Color(
+                0xFFF5F9F8,
+              ), // Light teal background
+              useMaterial3: true,
+            ),
+          );
+        },
       ),
     );
   }

@@ -58,10 +58,9 @@ import 'package:job_mate/features/job_search/domain/repositories/job_chat_reposi
 import 'package:job_mate/features/job_search/domain/usecases/get_all_chats.dart';
 import 'package:job_mate/features/job_search/domain/usecases/get_chat_by_id.dart';
 import 'package:job_mate/features/job_search/domain/usecases/send_chat_message.dart';
-
 import 'package:job_mate/features/job_search/presentation/bloc/job_search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:job_mate/core/presentation/bloc/localization_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -227,7 +226,7 @@ Future<void> init() async {
   );
 
   // === Interview Feature ===
-   // === Interview Feature ===
+  // === Interview Feature ===
   // Local Data Source
   sl.registerLazySingleton<InterviewLocalDataSource>(
     () => InterviewLocalDataSourceImpl(sl<SharedPreferences>()),
@@ -291,35 +290,43 @@ Future<void> init() async {
     ),
   );
 
-  
-
   // === Job Search Feature ===
   // ... (previous registrations remain)
 
-sl.registerLazySingleton<JobChatRemoteDataSource>(
-  () => JobChatRemoteDataSourceImpl(
-    dio: sl<Dio>(),
-    authLocalDataSource: sl<AuthLocalDataSource>(),
-  ),
-);
+  sl.registerLazySingleton<JobChatRemoteDataSource>(
+    () => JobChatRemoteDataSourceImpl(
+      dio: sl<Dio>(),
+      authLocalDataSource: sl<AuthLocalDataSource>(),
+    ),
+  );
 
-sl.registerLazySingleton<JobChatRepository>(
-  () => JobChatRepositoryImpl(
-    remoteDataSource: sl<JobChatRemoteDataSource>(),
-    networkInfo: sl<NetworkInfo>(),
-  ),
-);
+  sl.registerLazySingleton<JobChatRepository>(
+    () => JobChatRepositoryImpl(
+      remoteDataSource: sl<JobChatRemoteDataSource>(),
+      networkInfo: sl<NetworkInfo>(),
+    ),
+  );
 
-sl.registerLazySingleton<GetAllChats>(() => GetAllChats(sl<JobChatRepository>()));
-sl.registerLazySingleton<GetChatById>(() => GetChatById(sl<JobChatRepository>()));
-sl.registerLazySingleton<SendJobChatMessage>(() => SendJobChatMessage(sl<JobChatRepository>()));
+  sl.registerLazySingleton<GetAllChats>(
+    () => GetAllChats(sl<JobChatRepository>()),
+  );
+  sl.registerLazySingleton<GetChatById>(
+    () => GetChatById(sl<JobChatRepository>()),
+  );
+  sl.registerLazySingleton<SendJobChatMessage>(
+    () => SendJobChatMessage(sl<JobChatRepository>()),
+  );
 
-sl.registerFactory(
-  () => JobChatBloc(
-    getAllChats: sl<GetAllChats>(),
-    getChatById: sl<GetChatById>(),
-    // sendChatMessage: sl<SendChatMessage>(),
-    sendChatMessage: sl<SendJobChatMessage>(),
-  ),
-);
+  sl.registerFactory(
+    () => JobChatBloc(
+      getAllChats: sl<GetAllChats>(),
+      getChatById: sl<GetChatById>(),
+      // sendChatMessage: sl<SendChatMessage>(),
+      sendChatMessage: sl<SendJobChatMessage>(),
+    ),
+  );
+
+  // === Core Features ===
+  // Localization Bloc
+  sl.registerFactory(() => LocalizationBloc());
 }

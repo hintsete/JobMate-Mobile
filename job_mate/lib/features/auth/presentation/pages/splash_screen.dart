@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -81,7 +81,10 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 5),
                         Text(
                           l10n.aiPowered,
-                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -97,7 +100,10 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 5),
                         Text(
                           l10n.careerFocus,
-                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -113,7 +119,10 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 5),
                         Text(
                           l10n.smartInsights,
-                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -165,4 +174,3 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
-

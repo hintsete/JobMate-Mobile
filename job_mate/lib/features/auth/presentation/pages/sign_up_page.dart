@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:job_mate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:job_mate/core/presentation/widgets/language_toggle_button.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -51,7 +52,9 @@ class _SignupPageState extends State<SignupPage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterEmailFirst)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseEnterEmailFirst),
+        ),
       );
     }
   }
@@ -59,26 +62,48 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: LanguageToggleButton(
+              backgroundColor: Colors.grey.shade200,
+              iconColor: Colors.teal,
+              textColor: Colors.teal,
+            ),
+          ),
+        ],
+      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           print('State changed to: $state');
           if (state is AuthSuccess) {
             if (state.type == 'register') {
-              context.go('/login'); // Navigate to login after successful registration
+              context.go(
+                '/login',
+              ); // Navigate to login after successful registration
             } else if (state.type == 'login') {
-              context.go('/cv-analysis'); // Navigate to CV analysis after successful login
+              context.go(
+                '/cv-analysis',
+              ); // Navigate to CV analysis after successful login
             }
           }
-          if (state is AuthError) { // Separate check for AuthError
+          if (state is AuthError) {
+            // Separate check for AuthError
             print('Showing error: ${state.message}'); // Debug log
-            final errorMessage = state.message.contains('500')
-                ? l10n.registrationFailedServer
-                : state.message.contains('400')
+            final errorMessage =
+                state.message.contains('500')
+                    ? l10n.registrationFailedServer
+                    : state.message.contains('400')
                     ? l10n.registrationFailedInvalid
                     : l10n.registrationFailedUnexpected;
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(errorMessage)));
           }
         },
         builder: (context, state) {
@@ -106,14 +131,20 @@ class _SignupPageState extends State<SignupPage> {
                       const SizedBox(height: 4),
                       Text(
                         l10n.yourAiCareerBuddy,
-                        style: const TextStyle(fontSize: 12, color: Colors.black54),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 32),
                   Text(
                     l10n.welcomeToJobmate,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -148,7 +179,11 @@ class _SignupPageState extends State<SignupPage> {
                                 hintText: l10n.enterYourFirstName,
                                 border: const OutlineInputBorder(),
                               ),
-                              validator: (val) => val == null || val.isEmpty ? l10n.required : null,
+                              validator:
+                                  (val) =>
+                                      val == null || val.isEmpty
+                                          ? l10n.required
+                                          : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -158,7 +193,11 @@ class _SignupPageState extends State<SignupPage> {
                                 hintText: l10n.enterYourLastName,
                                 border: const OutlineInputBorder(),
                               ),
-                              validator: (val) => val == null || val.isEmpty ? l10n.required : null,
+                              validator:
+                                  (val) =>
+                                      val == null || val.isEmpty
+                                          ? l10n.required
+                                          : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -168,7 +207,11 @@ class _SignupPageState extends State<SignupPage> {
                                 hintText: l10n.enterYourEmail,
                                 border: const OutlineInputBorder(),
                               ),
-                              validator: (val) => val == null || val.isEmpty ? l10n.required : null,
+                              validator:
+                                  (val) =>
+                                      val == null || val.isEmpty
+                                          ? l10n.required
+                                          : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -180,11 +223,18 @@ class _SignupPageState extends State<SignupPage> {
                                 border: const OutlineInputBorder(),
                               ),
                               validator: (val) {
-                                if (val == null || val.isEmpty) return l10n.required;
-                                if (val.length < 8) return l10n.passwordMinLength;
-                                if (!val.contains(RegExp(r'[A-Z]'))) return l10n.passwordUppercase;
-                                if (!val.contains(RegExp(r'[0-9]'))) return l10n.passwordNumber;
-                                if (!val.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return l10n.passwordSpecialChar;
+                                if (val == null || val.isEmpty)
+                                  return l10n.required;
+                                if (val.length < 8)
+                                  return l10n.passwordMinLength;
+                                if (!val.contains(RegExp(r'[A-Z]')))
+                                  return l10n.passwordUppercase;
+                                if (!val.contains(RegExp(r'[0-9]')))
+                                  return l10n.passwordNumber;
+                                if (!val.contains(
+                                  RegExp(r'[!@#$%^&*(),.?":{}|<>]'),
+                                ))
+                                  return l10n.passwordSpecialChar;
                                 return null;
                               },
                             ),
@@ -218,7 +268,11 @@ class _SignupPageState extends State<SignupPage> {
                                       hintText: l10n.otpCode,
                                       border: const OutlineInputBorder(),
                                     ),
-                                    validator: (val) => val == null || val.isEmpty ? l10n.required : null,
+                                    validator:
+                                        (val) =>
+                                            val == null || val.isEmpty
+                                                ? l10n.required
+                                                : null,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -247,14 +301,17 @@ class _SignupPageState extends State<SignupPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.teal,
                                 ),
-                                child: isLoading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : Text(
-                                        l10n.signUp,
-                                        style: const TextStyle(color: Colors.white),
-                                      ),
+                                child:
+                                    isLoading
+                                        ? const CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
+                                        : Text(
+                                          l10n.signUp,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
                               ),
                             ),
                           ],
