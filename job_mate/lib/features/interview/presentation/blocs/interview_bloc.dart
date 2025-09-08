@@ -71,8 +71,8 @@ class InterviewBloc extends Bloc<InterviewEvent, InterviewState> {
       emit(const InterviewLoading());
 
       final result = await startStructuredSession(event.field);
-      result.fold(
-        (failure) => emit(
+      await result.fold(
+        (failure) async => emit(
           InterviewError("Could not start session: ${failure.toString()}"),
         ),
         (session) async {
@@ -87,35 +87,41 @@ class InterviewBloc extends Bloc<InterviewEvent, InterviewState> {
           // For structured interviews, the first question might be available immediately
           // Try to get it from history or make a continue call
           final historyResult = await getStructuredHistory(_chatId!);
-          historyResult.fold(
+          await historyResult.fold(
             (failure) async {
               // If no history, try to continue the interview to get first question
               print('DEBUG: No history found, trying continue endpoint');
               final continueResult = await continueStructuredSession(_chatId!);
-              continueResult.fold(
-                (failure) =>
+              await continueResult.fold(
+                (failure) async =>
                     print('DEBUG: Continue failed: ${failure.toString()}'),
-                (firstQuestion) {
-                  _messages = [firstQuestion];
-                  emit(InterviewLoaded(_messages, session: session));
+                (firstQuestion) async {
+                  if (!emit.isDone) {
+                    _messages = [firstQuestion];
+                    emit(InterviewLoaded(_messages, session: session));
+                  }
                 },
               );
             },
             (history) async {
               if (history.isNotEmpty) {
-                _messages = history;
-                emit(InterviewLoaded(_messages, session: session));
+                if (!emit.isDone) {
+                  _messages = history;
+                  emit(InterviewLoaded(_messages, session: session));
+                }
               } else {
                 print('DEBUG: History is empty, trying continue endpoint');
                 final continueResult = await continueStructuredSession(
                   _chatId!,
                 );
-                continueResult.fold(
-                  (failure) =>
+                await continueResult.fold(
+                  (failure) async =>
                       print('DEBUG: Continue failed: ${failure.toString()}'),
-                  (firstQuestion) {
-                    _messages = [firstQuestion];
-                    emit(InterviewLoaded(_messages, session: session));
+                  (firstQuestion) async {
+                    if (!emit.isDone) {
+                      _messages = [firstQuestion];
+                      emit(InterviewLoaded(_messages, session: session));
+                    }
                   },
                 );
               }

@@ -32,9 +32,10 @@ class InterviewMessageModel extends InterviewMessage {
       id: json['id']?.toString(),
       chatId: json['chat_id'] ?? '',
       role: 'assistant',
-      content: json['question'] ?? json['content'] ?? '',
+      content:
+          json['next_question'] ?? json['question'] ?? json['content'] ?? '',
       timestamp: DateTime.now(),
-      questionIndex: json['question_index'],
+      questionIndex: json['current_question'] ?? json['question_index'],
     );
   }
 

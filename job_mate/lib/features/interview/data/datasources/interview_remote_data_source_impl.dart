@@ -352,8 +352,9 @@ class InterviewRemoteDataSourceImpl implements InterviewRemoteDataSource {
 
       if (response.statusCode == 200) {
         final responseData = response.data as Map<String, dynamic>;
-        final data = responseData['data'] as List<dynamic>? ?? [];
-        return data
+        final data = responseData['data'] as Map<String, dynamic>;
+        final messages = data['messages'] as List<dynamic>? ?? [];
+        return messages
             .map(
               (item) =>
                   InterviewMessageModel.fromJson(item as Map<String, dynamic>),
