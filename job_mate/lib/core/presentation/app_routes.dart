@@ -1,5 +1,8 @@
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:job_mate/core/presentation/routes.dart';
+import 'package:job_mate/dependency_injection.dart' as di;
+import 'package:job_mate/features/interview/presentation/blocs/interview_bloc.dart';
 import 'package:job_mate/features/auth/presentation/pages/home_page.dart';
 
 import 'package:job_mate/features/auth/presentation/pages/splash_screen.dart';
@@ -37,13 +40,19 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/interview/freeform',
-      builder: (context, state) => const FreeformInterviewPage(),
+      builder: (context, state) => BlocProvider(
+        create: (_) => di.sl<InterviewBloc>(),
+        child: const FreeformInterviewPage(),
+      ),
     ),
     GoRoute(
       path: '/interview/structured',
       builder: (context, state) {
         final field = state.uri.queryParameters['field'] ?? 'Software Engineer';
-        return StructuredInterviewPage(field: field);
+        return BlocProvider(
+          create: (_) => di.sl<InterviewBloc>(),
+          child: StructuredInterviewPage(field: field),
+        );
       },
     ),
   ],
